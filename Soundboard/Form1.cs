@@ -15,6 +15,13 @@ namespace Soundboard
     public Form1()
     {
       InitializeComponent();
+
+      SoundBoard soundBoard = new SoundBoard(buttonSelectMusicDirectory, textBoxMusicDirectory, listBoxMusicFiles);
+
+      soundBoard
+        .SetVolumeBar(hScrollBarVolume)
+        .SetLabel(labelVolume)
+        .SetPlayAndPauseButton(buttonPlayAndPause);
     }
   }
 }
