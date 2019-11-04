@@ -33,10 +33,13 @@
       this.buttonSelectMusicDirectory = new System.Windows.Forms.Button();
       this.listBoxMusicFiles = new System.Windows.Forms.ListBox();
       this.groupBox1 = new System.Windows.Forms.GroupBox();
-      this.hScrollBarVolume = new System.Windows.Forms.HScrollBar();
       this.labelVolume = new System.Windows.Forms.Label();
       this.buttonPlayAndPause = new System.Windows.Forms.Button();
-      this.progressBar1 = new System.Windows.Forms.ProgressBar();
+      this.progressBar = new System.Windows.Forms.ProgressBar();
+      this.vScrollBarVolume = new System.Windows.Forms.VScrollBar();
+      this.labelVolumeText = new System.Windows.Forms.Label();
+      this.labelEndTime = new System.Windows.Forms.Label();
+      this.labelCurrentTime = new System.Windows.Forms.Label();
       this.groupBox1.SuspendLayout();
       this.SuspendLayout();
       // 
@@ -76,51 +79,86 @@
       this.groupBox1.TabStop = false;
       this.groupBox1.Text = "Music Directory";
       // 
-      // hScrollBarVolume
-      // 
-      this.hScrollBarVolume.Location = new System.Drawing.Point(12, 317);
-      this.hScrollBarVolume.Name = "hScrollBarVolume";
-      this.hScrollBarVolume.Size = new System.Drawing.Size(186, 28);
-      this.hScrollBarVolume.TabIndex = 4;
-      this.hScrollBarVolume.Value = 20;
-      // 
       // labelVolume
       // 
       this.labelVolume.AutoSize = true;
       this.labelVolume.Font = new System.Drawing.Font("Consolas", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.labelVolume.Location = new System.Drawing.Point(12, 299);
+      this.labelVolume.Location = new System.Drawing.Point(218, 31);
       this.labelVolume.Name = "labelVolume";
-      this.labelVolume.Size = new System.Drawing.Size(56, 18);
+      this.labelVolume.Size = new System.Drawing.Size(72, 18);
       this.labelVolume.TabIndex = 5;
-      this.labelVolume.Text = "Volume";
+      this.labelVolume.Text = "(XX/100)";
       // 
       // buttonPlayAndPause
       // 
       this.buttonPlayAndPause.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-      this.buttonPlayAndPause.Location = new System.Drawing.Point(12, 348);
+      this.buttonPlayAndPause.Location = new System.Drawing.Point(12, 280);
       this.buttonPlayAndPause.Name = "buttonPlayAndPause";
       this.buttonPlayAndPause.Size = new System.Drawing.Size(72, 31);
       this.buttonPlayAndPause.TabIndex = 6;
       this.buttonPlayAndPause.Text = "▶";
       this.buttonPlayAndPause.UseVisualStyleBackColor = true;
       // 
-      // progressBar1
+      // progressBar
       // 
-      this.progressBar1.Location = new System.Drawing.Point(12, 415);
-      this.progressBar1.Name = "progressBar1";
-      this.progressBar1.Size = new System.Drawing.Size(186, 23);
-      this.progressBar1.Step = 1;
-      this.progressBar1.TabIndex = 7;
+      this.progressBar.Location = new System.Drawing.Point(63, 415);
+      this.progressBar.MarqueeAnimationSpeed = 10;
+      this.progressBar.Name = "progressBar";
+      this.progressBar.Size = new System.Drawing.Size(671, 23);
+      this.progressBar.Step = 1;
+      this.progressBar.TabIndex = 7;
+      // 
+      // vScrollBarVolume
+      // 
+      this.vScrollBarVolume.Location = new System.Drawing.Point(223, 60);
+      this.vScrollBarVolume.Name = "vScrollBarVolume";
+      this.vScrollBarVolume.Size = new System.Drawing.Size(59, 214);
+      this.vScrollBarVolume.SmallChange = 5;
+      this.vScrollBarVolume.TabIndex = 8;
+      this.vScrollBarVolume.Value = 70;
+      // 
+      // labelVolumeText
+      // 
+      this.labelVolumeText.AutoSize = true;
+      this.labelVolumeText.Font = new System.Drawing.Font("Consolas", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.labelVolumeText.Location = new System.Drawing.Point(221, 13);
+      this.labelVolumeText.Name = "labelVolumeText";
+      this.labelVolumeText.Size = new System.Drawing.Size(56, 18);
+      this.labelVolumeText.TabIndex = 9;
+      this.labelVolumeText.Text = "Volume";
+      // 
+      // labelEndTime
+      // 
+      this.labelEndTime.AutoSize = true;
+      this.labelEndTime.Font = new System.Drawing.Font("Consolas", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.labelEndTime.Location = new System.Drawing.Point(740, 417);
+      this.labelEndTime.Name = "labelEndTime";
+      this.labelEndTime.Size = new System.Drawing.Size(48, 18);
+      this.labelEndTime.TabIndex = 11;
+      this.labelEndTime.Text = "--:--";
+      // 
+      // labelCurrentTime
+      // 
+      this.labelCurrentTime.AutoSize = true;
+      this.labelCurrentTime.Font = new System.Drawing.Font("Consolas", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.labelCurrentTime.Location = new System.Drawing.Point(9, 417);
+      this.labelCurrentTime.Name = "labelCurrentTime";
+      this.labelCurrentTime.Size = new System.Drawing.Size(48, 18);
+      this.labelCurrentTime.TabIndex = 12;
+      this.labelCurrentTime.Text = "00:00";
       // 
       // Form1
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.ClientSize = new System.Drawing.Size(800, 450);
-      this.Controls.Add(this.progressBar1);
+      this.Controls.Add(this.labelCurrentTime);
+      this.Controls.Add(this.labelEndTime);
+      this.Controls.Add(this.labelVolumeText);
+      this.Controls.Add(this.vScrollBarVolume);
+      this.Controls.Add(this.progressBar);
       this.Controls.Add(this.buttonPlayAndPause);
       this.Controls.Add(this.labelVolume);
-      this.Controls.Add(this.hScrollBarVolume);
       this.Controls.Add(this.groupBox1);
       this.Name = "Form1";
       this.Text = "Form1";
@@ -138,10 +176,13 @@
     private System.Windows.Forms.Button buttonSelectMusicDirectory;
     private System.Windows.Forms.ListBox listBoxMusicFiles;
     private System.Windows.Forms.GroupBox groupBox1;
-    private System.Windows.Forms.HScrollBar hScrollBarVolume;
     private System.Windows.Forms.Label labelVolume;
     private System.Windows.Forms.Button buttonPlayAndPause;
-    private System.Windows.Forms.ProgressBar progressBar1;
+    private System.Windows.Forms.ProgressBar progressBar;
+    private System.Windows.Forms.VScrollBar vScrollBarVolume;
+    private System.Windows.Forms.Label labelVolumeText;
+    private System.Windows.Forms.Label labelEndTime;
+    private System.Windows.Forms.Label labelCurrentTime;
   }
 }
 

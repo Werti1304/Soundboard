@@ -19,9 +19,12 @@ namespace Soundboard
       SoundBoard soundBoard = new SoundBoard(buttonSelectMusicDirectory, textBoxMusicDirectory, listBoxMusicFiles);
 
       soundBoard
-        .SetVolumeBar(hScrollBarVolume)
+        .SetVolumeBar(vScrollBarVolume)
         .SetLabel(labelVolume)
-        .SetPlayAndPauseButton(buttonPlayAndPause);
+        .SetPlayAndPauseButton(buttonPlayAndPause)
+        .SetProgressBar(progressBar)
+        .SetCurrentTimeLabel(labelCurrentTime)
+        .SetEndTimeLabel(labelEndTime);
     }
   }
 }

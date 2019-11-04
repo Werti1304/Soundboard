@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using WMPLib;
 
@@ -22,11 +23,17 @@ namespace Soundboard
 
     private Directory directory;
 
-    private HScrollBar _volumeBar;
+    private ScrollBar _volumeBar;
     private Label _volumeLabel;
     private Button _playAndPauseButton;
+    private ProgressBar _progressBar;
+
+    private Label _currentTimeLabel;
+    private Label _endTimeLabel;
 
     private bool _volumeLabelSet = false;
+
+    private WMPPlayState _currentPlayState;
 
     public SoundBoard(Button buttonDirectorySelect, TextBox textBox, ListBox fileListBox)
     {
@@ -56,6 +63,57 @@ namespace Soundboard
       };
 
       directory = new Directory(buttonDirectorySelect, textBox, fileListBox);
+
+      _player.PlayStateChange += PlayerOnPlayStateChange;
+
+      _fileListBox.SelectedIndexChanged += FileListBoxOnSelectedIndexChanged;
+    }
+
+    private void PlayerOnPlayStateChange(int newstate)
+    {
+      _currentPlayState = (WMPPlayState) newstate;
+
+      switch (_currentPlayState)
+      {
+        case WMPPlayState.wmppsUndefined:
+          break;
+        case WMPPlayState.wmppsStopped:
+          _progressBar.Value = _progressBar.Maximum;
+          _playAndPauseButton.Text = "▶";
+          break;
+        case WMPPlayState.wmppsPaused:
+          _playAndPauseButton.Text = "▶";
+          break;
+        case WMPPlayState.wmppsPlaying:
+          _progressBar.Maximum = (int)(100 * _player.controls.currentItem.duration);
+          _playAndPauseButton.Text = "⏸";
+
+          if (_endTimeLabel != null)
+          {
+            _endTimeLabel.Text = _player.currentMedia.durationString;
+          }
+          break;
+        case WMPPlayState.wmppsScanForward:
+          break;
+        case WMPPlayState.wmppsScanReverse:
+          break;
+        case WMPPlayState.wmppsBuffering:
+          break;
+        case WMPPlayState.wmppsWaiting:
+          break;
+        case WMPPlayState.wmppsMediaEnded:
+          break;
+        case WMPPlayState.wmppsTransitioning:
+          break;
+        case WMPPlayState.wmppsReady:
+          break;
+        case WMPPlayState.wmppsReconnecting:
+          break;
+        case WMPPlayState.wmppsLast:
+          break;
+        default:
+          throw new ArgumentOutOfRangeException();
+      }
     }
 
     public SoundBoard SetLabel(Label label)
@@ -68,11 +126,12 @@ namespace Soundboard
       return this;
     }
 
-    public SoundBoard SetVolumeBar(HScrollBar hScrollBar)
+    public SoundBoard SetVolumeBar(ScrollBar scrollBar)
     {
-      _volumeBar = hScrollBar;
+      _volumeBar = scrollBar;
+      _volumeBar.Maximum = 100 + _volumeBar.LargeChange - 1;
       _volumeBar.Scroll += OnVolumeBarScroll;
-      _player.settings.volume = hScrollBar.Value;
+      _player.settings.volume = scrollBar.Value;
 
       UpdateVolumeLabel();
 
@@ -87,12 +146,38 @@ namespace Soundboard
       return this;
     }
 
+    public SoundBoard SetProgressBar(ProgressBar progressBar)
+    {
+      _progressBar = progressBar;
+
+      SetProgressBarUpdateTimer();
+
+      return this;
+    }
+
+    public SoundBoard SetCurrentTimeLabel(Label currentTimeLabel)
+    {
+      _currentTimeLabel = currentTimeLabel;
+
+      return this;
+    }
+
+    public SoundBoard SetEndTimeLabel(Label endTimeLabel)
+    {
+      _endTimeLabel = endTimeLabel;
+
+      return this;
+    }
+
     #region Events
+
+    private void FileListBoxOnSelectedIndexChanged(object sender, EventArgs e)
+    {
+      _player.URL = (_fileListBox.SelectedItem as SoundData)?.Value;
+    }
 
     public void OnVolumeBarScroll(object sender, ScrollEventArgs e)
     {
-      _player.settings.volume = e.NewValue;
-
       UpdateVolumeLabel();
     }
 
@@ -108,22 +193,46 @@ namespace Soundboard
       }
     }
 
+    private void UpdateProgressBar(object sender, EventArgs e)
+    {
+      if (_player.playState != WMPPlayState.wmppsPlaying)
+      {
+        return;
+      }
+
+      double currentPosition = 100 * _player.controls.currentPosition;
+
+      if (currentPosition < _progressBar.Maximum)
+      {
+        _progressBar.Value = (int)(currentPosition);
+      }
+
+      string currentPositionStr = _player.controls.currentPositionString;
+
+      _currentTimeLabel.Text = currentPositionStr == "" ? "00:00" : _player.controls.currentPositionString;
+    }
+
     #endregion
 
+    private void SetProgressBarUpdateTimer()
+    {
+      Timer timer = new Timer();
+      timer.Tick += UpdateProgressBar;
+      timer.Interval = 100; //ms
+      timer.Start();
+    }
 
     private void StartPlayblack()
     {
       if (_fileListBox.SelectedItem != null)
       {
-        _player.URL = (_fileListBox.SelectedItem as SoundData)?.Value;
-        _playAndPauseButton.Text = "⏸";
+        _player.controls.play();
       }
     }
 
     private void PausePlayback()
     {
       _player.controls.pause();
-      _playAndPauseButton.Text = "▶";
     }
 
     private void StopPlayback()
@@ -150,9 +259,11 @@ namespace Soundboard
 
     private void UpdateVolumeLabel()
     {
+      _player.settings.volume = 100 - _volumeBar.Value;
+
       if (_volumeLabelSet)
       {
-        _volumeLabel.Text = $"Volume ({_volumeBar.Value}/100)";
+        _volumeLabel.Text = $"({100 - _volumeBar.Value}/100)";
       }
     }
 
